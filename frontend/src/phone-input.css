@@ -1,0 +1,73 @@
+/* Base container */
+.PhoneInput {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px; /* match h-11 */
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 0.75rem; /* rounded-xl */
+  padding: 0 0.75rem; /* px-3 */
+  background-color: #fff;
+}
+
+/* Focus ring mimic Tailwind focus */
+.PhoneInput:focus-within {
+  outline: none;
+  border-color: #6366f1; /* indigo-500 */
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+/* Country select button */
+.PhoneInputCountry {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  height: 100%;
+  align-self: stretch;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid #e5e7eb; /* divider */
+}
+
+/* Input field */
+.PhoneInputInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  height: 100%;
+  font-size: 0.95rem;
+  color: #111827; /* gray-900 */
+  padding-left: 2px;
+}
+
+/* Placeholder color */
+.PhoneInputInput::placeholder {
+  color: #9ca3af; /* gray-400 */
+}
+
+/* Country icon sizing for clean alignment */
+.PhoneInputCountryIcon {
+  width: 20px !important;
+  height: 14px !important;
+  box-shadow: none !important;
+}
+.PhoneInputCountryIconImg {
+  width: 20px !important;
+  height: 14px !important;
+}
+/* Asegura tamaño para SVGs cuando se usan banderas como componentes */
+.PhoneInputCountryIcon svg {
+  width: 20px !important;
+  height: 14px !important;
+  display: block;
+}
+.PhoneInputCountrySelectArrow {
+  margin-left: 2px;
+}
+
+/* Error state */
+.phone-input-error {
+  border-color: #dc2626 !important; /* red-600 */
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2) !important;
+}

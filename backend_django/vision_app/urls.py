@@ -20,18 +20,20 @@ def api_test(request):
 urlpatterns = [
     # Test endpoint
     path('test/', api_test, name='api_test'),
-    # OpenAI health endpoint
-    path('openai-health/', views.openai_health, name='openai_health'),
     
     # Authentication endpoints
     path('auth/register/', views.RegisterView.as_view(), name='register'),
     path('auth/login/', views.LoginView.as_view(), name='login'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/profile/', views.ProfileView.as_view(), name='profile'),
+    path('auth/change-password/', views.ChangePasswordView.as_view(), name='change_password'),
+    path('auth/avatar/', views.UploadAvatarView.as_view(), name='upload_avatar'),
     
     # Analysis endpoints
     path('analyze-image/', views.AnalyzeImageView.as_view(), name='analyze_image'),
     path('history/', views.AnalysisHistoryView.as_view(), name='analysis_history'),
+    path('history/clear/', views.ClearHistoryView.as_view(), name='clear_history'),
     path('analysis/<uuid:pk>/', views.AnalysisDetailView.as_view(), name='analysis_detail'),
     path('download-analysis/<uuid:analysis_id>/', views.download_analysis_pdf, name='download_analysis_pdf'),
+    path('runtime-info/', views.runtime_info, name='runtime_info'),
 ]

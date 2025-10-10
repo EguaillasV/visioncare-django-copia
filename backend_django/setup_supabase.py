@@ -1,82 +1,46 @@
 #!/usr/bin/env python3
 """
 Script para configurar Supabase con VisionCare Django
-
-Mejoras:
-- Soporta contraseñas con caracteres especiales (p. ej. @, $, :, /) auto-codificándolas.
-- Usa urllib.parse para parsear la URL de conexión de forma robusta.
-- Actualiza .env con DATABASE_URL codificada y variables individuales legibles.
 """
 import os
 import re
 from pathlib import Path
-from urllib.parse import urlsplit, urlunsplit, quote, unquote
-
-def _sanitize_connection_string(cs: str) -> tuple[str, str, str, int | None, str, str]:
-    """Devuelve (conn_sanitized, user, password_raw, host, port, dbname).
-
-    - Si la contraseña contiene '@' sin codificar (u otros reservados), la codifica.
-    - Mantiene el resto intacto.
-    """
-    cs = cs.strip()
-    if not cs.startswith('postgresql://'):
-        raise ValueError("La connection string debe empezar con 'postgresql://'")
-
-    # Separamos esquema y el resto
-    scheme, rest = cs.split('://', 1)
-    # Separar auth de host usando el ÚLTIMO '@' (lo anterior puede estar en contraseña)
-    if '@' not in rest:
-        raise ValueError("Formato inválido: falta '@' separando credenciales y host")
-    auth_part, host_part = rest.rsplit('@', 1)
-    if ':' not in auth_part:
-        raise ValueError("Formato inválido: credenciales deben ser 'usuario:contraseña'")
-
-    user, password_raw = auth_part.split(':', 1)
-    # Codificar por completo la contraseña (ningún caracter es 'safe')
-    password_enc = quote(password_raw, safe='')
-    rest_sanitized = f"{user}:{password_enc}@{host_part}"
-    conn_sanitized = f"{scheme}://{rest_sanitized}"
-
-    # Parsear con urlsplit ahora que está saneada
-    parts = urlsplit(conn_sanitized)
-    host = parts.hostname or ''
-    port = parts.port
-    # path viene como '/dbname'
-    dbname = (parts.path or '/').lstrip('/') or 'postgres'
-
-    return conn_sanitized, unquote(parts.username or user), password_raw, host, port, dbname
-
 
 def update_env_with_supabase(connection_string):
-    """Actualiza el .env con detalles de Supabase (soporta contraseñas con '@')."""
+    """Update .env file with Supabase connection details"""
     env_path = Path('.env')
-
-    try:
-        conn_sanitized, user, password_raw, host, port, dbname = _sanitize_connection_string(connection_string)
-    except Exception as e:
-        print(f"❌ Connection string inválida: {e}")
+    
+    # Parse connection string
+    # Format: postgresql://postgres:password@db.xxx.supabase.co:5432/postgres
+    pattern = r'postgresql://([^:]+):([^@]+)@([^:]+):(\d+)/([^?]+)'
+    match = re.match(pattern, connection_string)
+    
+    if not match:
+        print("❌ Invalid connection string format")
         return False
     
-    # Leer .env actual
+    user, password, host, port, dbname = match.groups()
+    
+    # Read current .env
     if env_path.exists():
         with open(env_path, 'r') as f:
             content = f.read()
     else:
         content = ""
     
-    # Actualizar DATABASE_URL (usar la versión saneada/codificada)
+    # Update DATABASE_URL
     if 'DATABASE_URL=' in content:
-        content = re.sub(r'DATABASE_URL=.*', f'DATABASE_URL={conn_sanitized}', content)
+        content = re.sub(r'DATABASE_URL=.*', f'DATABASE_URL={connection_string}', content)
     else:
-        content += f'\nDATABASE_URL={conn_sanitized}\n'
+        content += f'\nDATABASE_URL={connection_string}\n'
     
-    # Actualizar variables individuales (útil para debug y otras herramientas)
+    # Update individual settings
     updates = {
         'DB_NAME': dbname,
         'DB_USER': user,
-        'DB_PASSWORD': password_raw,
+        'DB_PASSWORD': password,
         'DB_HOST': host,
-        'DB_PORT': str(port or 5432),
+        'DB_PORT': port
     }
     
     for key, value in updates.items():
@@ -85,21 +49,18 @@ def update_env_with_supabase(connection_string):
         else:
             content += f'{key}={value}\n'
     
-    # Escribir contenido actualizado
+    # Write updated content
     with open(env_path, 'w') as f:
         f.write(content)
-
-    # Mostrar resumen (sin exponer la contraseña)
-    shown_conn = conn_sanitized.replace(password_raw, '****') if password_raw else conn_sanitized
-    print("✅ .env actualizado correctamente!")
-    print(f"🔗 DATABASE_URL: {shown_conn}")
+    
+    print("✅ .env file updated successfully!")
     print(f"📊 Database: {dbname}")
     print(f"🏠 Host: {host}")
     print(f"👤 User: {user}")
     return True
 
 def test_connection():
-    """Probar conexión a la base de datos a través de Django."""
+    """Test database connection"""
     try:
         import django
         from django.conf import settings
@@ -122,12 +83,7 @@ def test_connection():
             return False
             
     except Exception as e:
-        # Imprimir detalles útiles del error
-        print("❌ Error conectando a la base de datos:")
-        print("   Tipo:", type(e).__name__)
-        print("   Detalle:", e)
-        if hasattr(e, 'args'):
-            print("   Args:", e.args)
+        print(f"❌ Error conectando a la base de datos: {e}")
         return False
 
 if __name__ == "__main__":
@@ -137,7 +93,7 @@ if __name__ == "__main__":
     connection_string = input("📝 Pega tu Supabase connection string: ").strip()
     
     if not connection_string.startswith('postgresql://'):
-        print("❌ La connection string debe empezar con 'postgresql://' (p.ej. postgresql://usuario:contraseña@host:5432/postgres)")
+        print("❌ La connection string debe empezar con 'postgresql://'")
         exit(1)
     
     if update_env_with_supabase(connection_string):

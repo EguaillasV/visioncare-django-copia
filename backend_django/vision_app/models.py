@@ -11,6 +11,33 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+    # Profile picture
+    avatar = models.ImageField(upload_to='avatars/%Y/%m/%d/', null=True, blank=True)
+    # Additional profile fields
+    age = models.PositiveIntegerField(null=True, blank=True)
+    cedula = models.CharField(max_length=32, unique=True, null=True, blank=True)
+    GENDER_CHOICES = [
+        ('male', 'Masculino'),
+        ('female', 'Femenino'),
+        ('other', 'Otro'),
+        ('na', 'Prefiero no decir')
+    ]
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=True, blank=True)
+    phone = models.CharField(max_length=32, null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
+    # Location fields
+    country = models.CharField(max_length=100, null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    # Medical information
+    BLOOD_TYPES = [
+        ('A+', 'A+'), ('A-', 'A-'), ('B+', 'B+'), ('B-', 'B-'),
+        ('AB+', 'AB+'), ('AB-', 'AB-'), ('O+', 'O+'), ('O-', 'O-'),
+        ('SN', 'S/N'),  # Sin información
+    ]
+    blood_type = models.CharField(max_length=3, choices=BLOOD_TYPES, null=True, blank=True)
+    weight_kg = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    height_m = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

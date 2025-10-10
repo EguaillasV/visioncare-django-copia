@@ -1,0 +1,10 @@
+# Ignore training checkpoints and large binaries
+*.pth
+*.pt
+*.pth.tar
+*.ckpt
+
+# Allow ONNX runtime artifacts
+!*.onnx
+!*.onnx.json
+!README.md

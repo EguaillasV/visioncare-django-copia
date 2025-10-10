@@ -1,128 +1,43 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+## Unified .gitignore (single source of truth)
 
-# IDE and editors
-.idea/
+# === Editor / OS ===
 .vscode/
+.idea/
+.DS_Store
 
-# Dependencies
+# === Python ===
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.cache/
+
+# === Environment & Secrets ===
+.env
+*.env
+*.env.*
+
+# === Logs ===
+*.log
+debug.log
+
+# === Media (user uploads - not versioned) ===
+backend_django/media/
+
+# === Model artifacts (keep only ONNX + JSON + README) ===
+backend_django/vision_app/onnx_models/*.pth
+backend_django/vision_app/onnx_models/*.pt
+backend_django/vision_app/onnx_models/*.pth.tar
+backend_django/vision_app/onnx_models/*.ckpt
+
+# === Frontend (CRA / build output) ===
 node_modules/
-/node_modules
-/.pnp
+frontend/build/
+coverage/
+*.pnp
 .pnp.js
-.yarn/install-state.gz
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# Testing
-/coverage
-
-# Next.js
-/.next/
-/out/
-next-env.d.ts
-*.tsbuildinfo
-
-# Production builds
-/build
-dist/
-dist
-
-# Environment files (comprehensive coverage)
-
-*token.json*
-*credentials.json*
-
-# Logs and debug files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
-dump.rdb
 
-# System files
-.DS_Store
-*.pem
-
-# Python
-__pycache__/
-*pyc*
-venv/
-.venv/
-
-# Development tools
-chainlit.md
-.chainlit
-.ipynb_checkpoints/
-.ac
-
-# Deployment
-.vercel
-
-# Data and databases
-agenthub/agents/youtube/db
-
-# Archive files and large assets
-**/*.zip
-**/*.tar.gz
-**/*.tar
-**/*.tgz
-*.pack
-*.deb
-*.dylib
-
-# Build caches
-.cache/
-
-# Mobile development
-android-sdk/ -e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
-
-# Project-specific ignores (VisionCare Web)
-# Backend (Django)
-backend_django/db.sqlite3
-backend_django/debug.log
-backend_django/media/
-backend_django/.env
-backend_django/staticfiles/
-backend_django/static/
-
-# Frontend (React CRA)
-frontend/node_modules/
-frontend/build/
-frontend/.env
-frontend/.env.local
-frontend/.env.*.local
-frontend/.cache/
+# (If you later add a root package.json, review these entries.)
